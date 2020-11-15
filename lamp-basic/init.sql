@@ -11,3 +11,18 @@ CREATE TABLE `kabum`.`Users` (
   PRIMARY KEY (`id`), 
   UNIQUE (`email`)
 );
+
+INSERT INTO `Users`(`name`, `email`, `password`) 
+VALUES ("Thiago Lorente Kraetzer","thiago.kraetzer@kabum.com.br","kabum123");
+
+INSERT INTO `Users`(`name`, `email`, `password`) 
+VALUES ("William Lorente Kraetzer","william.kraetzer@kabum.com.br","kabum123");
+
+INSERT INTO `Users`(`name`, `email`, `password`) 
+VALUES ("Eu Lorente Kraetzer","eu.kraetzer@kabum.com.br","kabum123");
+
+INSERT INTO `Users`(`name`, `email`, `password`) 
+VALUES ("Voce Lorente Kraetzer","voce.kraetzer@kabum.com.br","kabum123");
+
+INSERT INTO `Users`(`name`, `email`, `password`) 
+VALUES ("Jhon Doe","jhon.doe@kabum.com.br","kabum123");
