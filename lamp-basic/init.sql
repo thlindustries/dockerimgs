@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS kabum;
 USE kabum;
 
-CREATE TABLE `kabum`.`Users` ( 
+CREATE TABLE `kabum`.`users` ( 
   `id` INT NOT NULL AUTO_INCREMENT , 
   `name` VARCHAR(255) NOT NULL , 
   `email` VARCHAR(255) NOT NULL , 
@@ -12,17 +12,17 @@ CREATE TABLE `kabum`.`Users` (
   UNIQUE (`email`)
 );
 
-INSERT INTO `Users`(`name`, `email`, `password`) 
+INSERT INTO `users`(`name`, `email`, `password`) 
 VALUES ("Thiago Lorente Kraetzer","thiago.kraetzer@kabum.com.br","kabum123");
 
-INSERT INTO `Users`(`name`, `email`, `password`) 
+INSERT INTO `users`(`name`, `email`, `password`) 
 VALUES ("William Lorente Kraetzer","william.kraetzer@kabum.com.br","kabum123");
 
-INSERT INTO `Users`(`name`, `email`, `password`) 
+INSERT INTO `users`(`name`, `email`, `password`) 
 VALUES ("Eu Lorente Kraetzer","eu.kraetzer@kabum.com.br","kabum123");
 
-INSERT INTO `Users`(`name`, `email`, `password`) 
+INSERT INTO `users`(`name`, `email`, `password`) 
 VALUES ("Voce Lorente Kraetzer","voce.kraetzer@kabum.com.br","kabum123");
 
-INSERT INTO `Users`(`name`, `email`, `password`) 
+INSERT INTO `users`(`name`, `email`, `password`) 
 VALUES ("Jhon Doe","jhon.doe@kabum.com.br","kabum123");
