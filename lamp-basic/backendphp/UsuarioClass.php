@@ -1,5 +1,6 @@
 <?php
-  require_once "UsuarioDAO.php";
+  define('__ROOT__', dirname(dirname(__FILE__)));
+  require_once(__ROOT__."/html/UsuarioDAO.php");
 
 class UsuarioClass
 {
@@ -24,74 +25,96 @@ class UsuarioClass
     return $this->$atrib;
   }
 
-  public function createClass($post)
+  public function signInClass($userData)
   {
-    //UsuarioController::debugMe($post);
-    return (new UsuarioDAO())->createDAO(new self($this->hashPassword($post)));
-  }
+    $forWhat = 'signin';
 
-  private function hashPassword($post){
-    $post["senha"] = password_hash($post["senha"], PASSWORD_DEFAULT);
-    return $post;
-  }
-
-  public function readClass($post)
-  {
-    if($this->validarAcessoClass($post)){
-      return (new UsuarioDAO())->readDAO($post["email"]);
+    if($this->validarAcessoClass($userData,$forWhat)){
+      return (new UsuarioDAO())->getUserDAO($userData);
     } else {
-      return "e-mail e/ou senha incorreto(s)";
+      return array("erro"=>"email ou senha incorretos");
     }
   }
 
-  public function updateClass($post)
+  public function createClass($newUser)
   {
-    if($this->validarAcessoClass($post)){
-      $post["senha"] = $post["senha-nova"];
-      $post = $this->hashPassword($post);
-      return (new UsuarioDAO())->updateDAO(new self($post));
+    return (new UsuarioDAO())->createDAO($this->hashPassword($newUser));
+  }
+
+  private function hashPassword($newUser){
+    $newUser["password"] = password_hash($newUser["password"], PASSWORD_DEFAULT);
+    return $newUser;
+  }
+
+  public function readClass($id)
+  {
+    return (new UsuarioDAO())->readDAO($id);
+  }
+
+  public function indexClass($post)
+  {
+    return (new UsuarioDAO())->indexDAO($post["email"]);
+  }
+
+  public function updateClass($userInfo)
+  {
+    $forWhat = 'update';
+
+    if($this->validarAcessoClass($userInfo, $forWhat)){
+      $userInfo = $this->hashPassword($userInfo);
+      return (new UsuarioDAO())->updateDAO($userInfo);
     } else {
-      return "e-mail e/ou senha incorreto(s)";
+      return array("erro"=>"email ou senha incorretos");
     }
   }
 
-  public function deleteClass($post)
+  public function deleteClass($id)
   {
-    if($this->validarAcessoClass($post)){
-      (new UsuarioDAO())->deleteDAO($post["email"]);
-      return;
-    } else {
-      return "e-mail e/ou senha incorreto(s)";
-    }
+    return (new UsuarioDAO())->deleteDAO($id);
   }
 
-  public function validarAcessoClass($post)
+  public function validarAcessoClass($userInfo,$forWhat)
   {
-    if ($this->checkCredenciais($post)) {
+    if ($this->checkCredenciais($userInfo, $forWhat)) {
       return true;
     } else {
       return false;
     }
   }
 
-  private function checkCredenciais($post)
+  private function checkCredenciais($userInfo, $forWhat)
   {
-    if (array_key_exists("email", $post) and array_key_exists("senha", $post)) {
-      $email = $post["email"];
-      $senha = $post["senha"];
-      if (!is_null($email) and !is_null($senha)) {
-        if ($this->validaUsuarioSenha($email, $senha)) {
-          return true;
+    if($forWhat == 'update'){
+      if (json_encode(!is_null($userInfo['email'])) and json_encode(!is_null($userInfo['oldPassword']))) {
+        $email = $userInfo["email"];
+        $oldPassword = $userInfo["oldPassword"];
+  
+        if (!is_null($email) and !is_null($oldPassword)) {
+          if ($this->validaUsuarioSenha($email, $oldPassword)) {
+            return true;
+          }
         }
       }
+      return false;
+    }else if($forWhat == 'signin'){
+      if (json_encode(!is_null($userInfo['email'])) and json_encode(!is_null($userInfo['password']))) {
+        $email = $userInfo["email"];
+        $password = $userInfo["password"];
+  
+        if (!is_null($email) and !is_null($password)) {
+          if ($this->validaUsuarioSenha($email, $password)) {
+            return true;
+          }
+        }
+      }
+      return false;
     }
-    return false;
   }
 
-  private function validaUsuarioSenha(&$email, &$senha)
+  private function validaUsuarioSenha(&$email, &$password)
   {
-    $usuario = (new UsuarioDAO())->validarAcessoDAO($email); // SELECT banco
-    if (password_verify($senha, $usuario->senha)) {
+    $user = (new UsuarioDAO())->validarAcessoDAO($email); // SELECT banco
+    if (password_verify($password, $user[0]['password'])) {
       return true;
     } else {
       return false;

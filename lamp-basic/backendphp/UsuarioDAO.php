@@ -1,69 +1,85 @@
 <?php
-    require_once "Conexao.php";
-    require_once "UsuarioClass.php";
+
+  define('__ROOT__', dirname(dirname(__FILE__)));
+  require_once(__ROOT__."/html/Conexao.php");
+  require_once(__ROOT__."/html/Sql.php");
+  require_once(__ROOT__."/html/UsuarioClass.php");
 
 class UsuarioDAO {
-  public function createDAO($usuario) {
-    //UsuarioController::debugMe($usuario);
+  private $sql;
+
+  public function __construct()
+  {
+    $this->sql = new Sql();
+  }
+  
+  public function createDAO($newUser) {
     try {
-      $sql = "INSERT INTO `users` (`name`,`email`,`senha`) VALUES ('$usuario->name', '$usuario->email', '$usuario->password')";
-      $p_sql = Conexao::getInstance($sql);
-      $p_sql->execute();
-      return $this->readDAO($usuario->email);
+      $query = "INSERT INTO `users` (`name`,`email`,`password`) VALUES (?,?,?)";
+      $params = array(
+        $newUser['name'],
+        $newUser['email'],
+        $newUser['password'],
+      );
+      return $this->sql->insert($query,$params);
     } catch (Exception $e) {
-
+      echo $e;
     }
   }
 
-  public function readDAO($email) {
+  public function readDAO($id) {
     try{
-      $sql = "SELECT * FROM `users` WHERE `email` = '$email'";
-      $p_sql = Conexao::getInstance($sql);
-      $p_sql->execute();
-      while($v_ret = $p_sql->fetchObject()) {
-          $usuario = new UsuarioClass((array) $v_ret);
-      }
-      return $usuario ?? null;
-    } catch (Exception $e) {
+      $query = "SELECT * FROM users WHERE id='$id'";
 
+      return $this->sql->select($query);
+
+    } catch (Exception $e) {
+      echo $e;
     }
   }
 
-  /** Retornar a lista de usuarios inteira ??como?? */
-  // public function indexDAO() {
-  //   try{
-  //     $sql = "SELECT * FROM `users`";
-  //     $p_sql = Conexao::getInstance($sql);
-  //     $p_sql->execute();
-  //     while($v_ret = $p_sql->fetchObject()) {
-  //         $usuario = new UsuarioClass((array) $v_ret);
-  //     }
-  //     return $usuario ?? null;
-  //   } catch (Exception $e) {
+  public function getUserDAO($userData) {
+    $email = $userData['email'];
+    try{
+      $query = "SELECT * FROM users WHERE email='$email'";
 
-  //   }
-  // }
+      return $this->sql->select($query);
+
+    } catch (Exception $e) {
+      echo $e;
+    }
+  }
+
+  /** Retornar a lista de usuarios inteira */
+  public function indexDAO() {
+    try{
+      $query = "SELECT * FROM users";
+      return $this->sql->select($query);
+    } catch (Exception $e) {
+      echo json_encode($e);
+    }
+  }
 
   public function updateDAO($usuario) {
+    $name = $usuario["name"];
+    $email = $usuario["email"];
+    $password = $usuario["password"];
     try {
-      $sql = "UPDATE `users` SET `name` = '$usuario->name', `password` = '$usuario->password' WHERE `email` = '$usuario->email'";
-      $p_sql = Conexao::getInstance($sql);
-      $p_sql->execute();
-      return $this->readDAO($usuario->email);
-
+      $sql = "UPDATE `users` SET `name` = '$name', `password` = '$password' WHERE `email` = '$email'";
+      $this->sql->query($sql,$params);
+      return "done";
     } catch (Exception $e) {
-
+      echo $e;
     }
   }
 
-  public function deleteDAO($email) {
+  public function deleteDAO($id) {
     try{
-      $sql = "DELETE FROM `users` WHERE `email` = '$email'";
-      $p_sql = Conexao::getInstance($sql);
-      $p_sql->execute();
+      $query = "DELETE FROM `users` WHERE `id` = '$id'";
+      $this->sql->query($query,$params);
       return "done";
     } catch (Exception $e) {
-
+      echo $e;
     }
   }
 
@@ -71,15 +87,14 @@ class UsuarioDAO {
   public function validarAcessoDAO($email) {
     try {
       $sql = "SELECT * FROM `users` WHERE `email` = '$email'";
-      $p_sql = Conexao::getInstance($sql);
-      $p_sql->execute();
-      while ($v_ret = $p_sql->fetchObject()) {
-        $usuario = new UsuarioClass((array) $v_ret);
-      }
-      //UsuarioController::debugMe($usuario);
-      return $usuario ?? null;
+      // while ($v_ret = $p_sql->fetchObject()) {
+        //   $usuario = new UsuarioClass((array) $v_ret);
+        // }
+        //UsuarioController::debugMe($usuario);
+      return $this->sql->select($sql);
+      // return $usuario ?? null;
     } catch (Exception $e) {
-
+      echo $e;
     }
   }
 }
